@@ -1,26 +1,39 @@
-const express = require('express')
-const router = express.Router()
-const userController = require('../controller/userC.js')
-const {validateParam,schemas} = require('../helper/routeHelper.js')
+const express = require('express');
+const router = express.Router();
+const userController = require('../controller/userC.js');
+const DeckController = require('../controller/deckC.js');
 
+const {
+  validateBody,
+  validateParam,
+  schemas,
+} = require('../helper/routeHelper.js');
 
+router.get('/', userController.index);
+router.post('/', validateBody(schemas.userSchema), userController.newUser);
 
-router.get('/', userController.index)
-router.post('/', userController.newUser)
+router
+  .route('/:userID')
+  .get(validateParam(schemas.idSchema, 'userID'), userController.getUser)
+  .put(
+    validateParam(schemas.idSchema, 'userID'),
+    validateBody(schemas.userSchema),
+    userController.replaceUser
+  )
+  .patch(
+    validateParam(schemas.idSchema, 'userID'),
+    validateBody(schemas.userOptionalSchema),
+    userController.updateUser
+  )
+  .delete(userController.deleteUser);
 
+router
+  .route('/:userID/decks')
+  .get(validateParam(schemas.idSchema, 'userID'), userController.getUserDecks)
+  .post(
+    validateParam(schemas.idSchema, 'userID'),
+    validateBody(schemas.deskSchema),
+    userController.newUserDeck
+  );
 
-
-router.route('/:userID')
-    .get(validateParam(schemas.idSchema, 'userID'), userController.getUser)
-    .put(userController.replaceUser)
-    .patch(userController.updateUser)
-    .delete(userController.deleteUser)
-
-
-
-
-
-router.route('/:userID/decks')
-    .get(userController.getUserDecks)
-    .post(userController.newUserDeck)
-module.exports = router //=> khai bao   
+module.exports = router; //=> khai bao
