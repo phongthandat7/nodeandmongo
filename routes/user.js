@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controller/userC.js');
-const DeckController = require('../controller/deckC.js');
 
 const {
   validateBody,
