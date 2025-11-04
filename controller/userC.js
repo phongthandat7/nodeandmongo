@@ -77,14 +77,40 @@ const index = async (req, res, next) => {
 // Tạo user mới (POST /users)
 const newUser = async (req, res, next) => {
   try {
-    // Tạo instance User mới từ body request
+    // Kiểm tra req.value.body tồn tại
+    if (!req.value || !req.value.body) {
+      throw new Error('Invalid request body');
+    }
+
+    // Kiểm tra email tồn tại
+    const existingUser = await User.findOne({ email: req.value.body.email });
+    if (existingUser) {
+      return res.status(400).json({
+        error: 'Email already exists',
+      });
+    }
+
+    // Tạo user mới
     const newUser = new User(req.value.body);
-    // Lưu user mới vào DB
     const savedUser = await newUser.save();
-    // Trả về user đã lưu với status 201
+
     return res.status(201).json(savedUser);
   } catch (error) {
-    // Chuyển lỗi
+    console.error('Error creating new user:', error);
+
+    // Xử lý các loại lỗi cụ thể
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({
+        error: error.message,
+      });
+    }
+
+    if (error.name === 'MongoError' && error.code === 11000) {
+      return res.status(400).json({
+        error: 'Duplicate key error',
+      });
+    }
+
     next(error);
   }
 };
