@@ -6,7 +6,7 @@ const {
   validateBody,
   validateParam,
   schemas,
-} = require('../helper/routeHelper.js');
+} = require('../validations/validation.js');
 
 router.get('/', userController.index);
 router.post('/', validateBody(schemas.userSchema), userController.newUser);

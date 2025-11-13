@@ -6,7 +6,7 @@ const {
   validateBody,
   validateParam,
   schemas,
-} = require('../helper/routeHelper.js');
+} = require('../validations/validation.js');
 
 router.get('/', DeckController.index);
 router.post('/', validateBody(schemas.newDeckSchema), DeckController.newDeck);
